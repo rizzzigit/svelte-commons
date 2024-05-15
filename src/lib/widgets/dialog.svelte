@@ -75,7 +75,6 @@
 	div.dialog {
 		max-width: calc(100vw - 32px);
 		max-height: calc(100vh - 32px);
-		min-height: 128px;
 
 		box-sizing: border-box;
 
