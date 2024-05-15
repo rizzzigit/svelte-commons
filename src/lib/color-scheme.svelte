@@ -2,7 +2,7 @@
   import { colors as enderColorScheme } from "./color-scheme/green.js";
   import { colors as enderDarkColorScheme } from "./color-scheme/green-dark.js";
 
-  import { writable, type Writable, derived as d } from "svelte/store";
+  import { writable, type Writable, derived as d, get } from "svelte/store";
   import { BROWSER } from "esm-env";
 
   export type ColorSchemeName = "green" | "green-dark" | string;
@@ -53,6 +53,27 @@
     }
 
     registeredColors[theme] = colorScheme;
+  }
+  export function getColorInt(
+    key: ColorKey,
+    theme: ColorSchemeName = get(currentColorScheme)
+  ): number | null {
+    return registeredColors?.[theme]?.[key] ?? 0;
+  }
+
+  export function getColorHex(key: ColorKey, theme?: ColorSchemeName) {
+    return `#${getColorInt(key, theme)?.toString(16).padStart(8, "0")}`;
+  }
+
+  export function getColorRgba(key: ColorKey, theme?: ColorSchemeName) {
+    const hex = getColorHex(key, theme);
+
+    const red = Number.parseInt(hex.slice(0, 2), 16);
+    const green = Number.parseInt(hex.slice(2, 4), 16);
+    const blue = Number.parseInt(hex.slice(4, 6), 16);
+    const alpha = Number.parseInt(hex.slice(6, 8), 16);
+
+    return `rgba(${red}, ${green}, ${blue}, ${alpha / 255})`;
   }
 
   function generateCssPropertyDeclarations(theme: ColorSchemeName) {

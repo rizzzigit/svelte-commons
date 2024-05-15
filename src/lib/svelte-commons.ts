@@ -14,6 +14,8 @@ export {
   titleStack,
 } from "./widgets/title.svelte";
 
+export { default as LoadingBar } from "./widgets/loading-bar.svelte";
+
 export {
   default as LoadingSpinner,
   type Size,
@@ -22,16 +24,19 @@ export {
 export { default as LoadingSpinnerPage } from "./widgets/loading-spinner-page.svelte";
 
 export {
+  default as Overlay,
   OverlayPositionType,
   type OverlayPosition,
 } from "./widgets/overlay.svelte";
 
 export {
+  default as AnimationFrame,
   type FrameCallback,
   type FrameListener,
 } from "./animation-frame.svelte";
 
 export {
+  default as Awaiter,
   type AwaiterSetStatusFunction,
   type AwaiterResetFunction,
   type AwaiterLoadFunction,
@@ -62,4 +67,4 @@ export {
   viewMode,
 } from "./responsive-layout.svelte";
 
-export { default as ResetCSS } from './reset-css.svelte'
+export { default as ResetCSS } from "./reset-css.svelte";
