@@ -78,7 +78,6 @@
 
   function generateCssPropertyDeclarations(theme: ColorSchemeName) {
     const color = registeredColors[theme];
-    console.log(color);
 
     let style = "";
 
