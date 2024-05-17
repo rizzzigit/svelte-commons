@@ -5,58 +5,61 @@
     Background = "background",
     BackgroundVariant = "background-variant",
   }
+
+  export type ButtonCallback = () => Promise<void> | void;
 </script>
 
 <script lang="ts">
-  import Awaiter from "$lib/awaiter.svelte";
+  import{ type Snippet } from 'svelte'
+  import Awaiter, { AwaiterResultType, type AwaiterChildrenParameters, type AwaiterResetFunction } from "$lib/awaiter.svelte";
+
   import LoadingSpinner from "./loading-spinner.svelte";
 
-  export let buttonClass: ButtonClass = ButtonClass.Primary;
-  export let enabled: boolean = true;
-  export let outline: boolean = true;
-  export let onClick: () => Promise<any> | any;
-  export let hint: string | null = null;
+  const {
+    buttonClass = ButtonClass.Primary,
+    enabled = true,
+    outline = true,
+    onClick,
+    hint = null,
+    children
+  }: {
+    children: Snippet,
+    buttonClass?: ButtonClass,
+    enabled?: boolean,
+    outline?: boolean,
+    onClick: ButtonCallback,
+    hint?: string | null,
+  } = $props();
 
-  let busy: boolean = false;
-
-  let load: () => Promise<void>;
-  let reset: (autoLoad?: boolean | undefined) => Promise<void>;
+  let busy: boolean = $state(false);
+  let run: AwaiterResetFunction<null> | undefined = $state();
 
   async function click() {
     try {
       busy = true;
 
-      await load();
+      await run?.(true, null);
     } finally {
-      reset(false);
       busy = false;
     }
   }
 </script>
 
+{#snippet buttonContent(props: AwaiterChildrenParameters<void, null>)}
+  {#if props.status === AwaiterResultType.Loading}
+    <LoadingSpinner size="1em" />
+  {:else}
+    {@render children()}
+  {/if}
+{/snippet}
+
 <button
   disabled={!enabled || busy}
-  class="button {buttonClass} {outline ? 'outline' : ''}"
-  on:click={click}
+  class="button {buttonClass}{outline ? ' outline' : ''}"
+  onclick={click}
   title={hint}
 >
-  <Awaiter
-    callback={async () => {
-      try {
-        await onClick();
-      } catch {}
-    }}
-    autoLoad={false}
-    bind:load
-    bind:reset
-  >
-    <svelte:fragment slot="loading">
-      <LoadingSpinner size="1em" />
-    </svelte:fragment>
-    <svelte:fragment slot="not-loaded">
-      <slot />
-    </svelte:fragment>
-  </Awaiter>
+  <Awaiter bind:reset={run} children={buttonContent} callback={async (): Promise<void> => { await onClick() }} autoLoad={false} />
 </button>
 
 <style lang="scss">

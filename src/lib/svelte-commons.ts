@@ -1,6 +1,6 @@
 export { default as Banner, BannerClass } from "./widgets/banner.svelte";
 
-export { default as Button, ButtonClass } from "./widgets/button.svelte";
+export { default as Button, ButtonClass, type ButtonCallback } from "./widgets/button.svelte";
 
 export { default as Dialog, DialogClass } from "./widgets/dialog.svelte";
 
