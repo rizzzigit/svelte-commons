@@ -37,11 +37,10 @@ export {
 
 export {
   default as Awaiter,
-  type AwaiterSetStatusFunction,
   type AwaiterResetFunction,
-  type AwaiterLoadFunction,
-  type AwaiterRetryFunction,
   type AwaiterCallback,
+  AwaiterResultType,
+  type AwaiterChildrenParameters,
 } from "./awaiter.svelte";
 
 export {
