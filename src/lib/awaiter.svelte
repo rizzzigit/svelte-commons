@@ -56,9 +56,17 @@
 
   async function run (): Promise<void> {
     try {
-      await (promiseState = (async () => await callback((newPayload) => {
-        payloadState = newPayload;
-      }))())
+      const setPayload: (payload: P | null) => void = (payload) => payloadState = payload
+
+      try {
+        const result = callback(setPayload)
+
+        if (result instanceof Promise) {
+          await (promiseState = result)
+        }
+      } catch (error: any) {
+        promiseState = Promise.reject(error)
+      }
     } catch {}
   }
 

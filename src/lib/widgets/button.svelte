@@ -35,6 +35,7 @@
   let run: AwaiterResetFunction<null> | undefined = $state();
 
   let event: MouseEvent | null = null;
+
   async function click(newEvent: MouseEvent) {
     try {
       event = newEvent
@@ -62,7 +63,7 @@
   onclick={click}
   title={hint}
 >
-  <Awaiter bind:reset={run} children={buttonContent} callback={async (): Promise<void> => { await onClick(event!) }} autoLoad={false} />
+  <Awaiter bind:reset={run} children={buttonContent} callback={() => onClick(event!)} autoLoad={false} />
 </button>
 
 <style lang="scss">
