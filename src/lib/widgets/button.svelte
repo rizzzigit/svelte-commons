@@ -4,6 +4,7 @@
     PrimaryContainer = "primary-container",
     Background = "background",
     BackgroundVariant = "background-variant",
+    Transparent = 'transparent'
   }
 
   export type ButtonCallback = (event: MouseEvent) => Promise<void> | void;
@@ -17,6 +18,7 @@
 
   const {
     buttonClass = ButtonClass.Primary,
+    loading: customLoading,
     enabled = true,
     outline = true,
     onClick,
@@ -24,6 +26,8 @@
     children
   }: {
     children: Snippet,
+    loading?: Snippet
+
     buttonClass?: ButtonClass,
     enabled?: boolean,
     outline?: boolean,
@@ -51,7 +55,11 @@
 
 {#snippet buttonContent(props: AwaiterChildrenParameters<void, null>)}
   {#if props.status === AwaiterResultType.Loading}
-    <LoadingSpinner size="1em" />
+    {#if customLoading != null}
+      {@render customLoading()}
+    {:else}
+      <LoadingSpinner size="1em" />
+    {/if}
   {:else}
     {@render children()}
   {/if}
@@ -140,6 +148,16 @@
   button.background-variant:active {
     background-color: var(--onBackground);
     color: var(--backgroundVariant);
+  }
+
+  button.transparent, button.transparent:hover {
+    background-color: transparent;
+    color: inherit;
+  }
+
+  button.transparent:active {
+    background-color: var(--shadow);
+    color: inherit;
   }
 
   button:disabled {
