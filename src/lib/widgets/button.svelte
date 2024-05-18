@@ -6,7 +6,7 @@
     BackgroundVariant = "background-variant",
   }
 
-  export type ButtonCallback = () => Promise<void> | void;
+  export type ButtonCallback = (event: MouseEvent) => Promise<void> | void;
 </script>
 
 <script lang="ts">
@@ -34,12 +34,15 @@
   let busy: boolean = $state(false);
   let run: AwaiterResetFunction<null> | undefined = $state();
 
-  async function click() {
+  let event: MouseEvent | null = null;
+  async function click(newEvent: MouseEvent) {
     try {
+      event = newEvent
       busy = true;
 
       await run?.(true, null);
     } finally {
+      event = null
       busy = false;
     }
   }
@@ -59,7 +62,7 @@
   onclick={click}
   title={hint}
 >
-  <Awaiter bind:reset={run} children={buttonContent} callback={async (): Promise<void> => { await onClick() }} autoLoad={false} />
+  <Awaiter bind:reset={run} children={buttonContent} callback={async (): Promise<void> => { await onClick(event!) }} autoLoad={false} />
 </button>
 
 <style lang="scss">
