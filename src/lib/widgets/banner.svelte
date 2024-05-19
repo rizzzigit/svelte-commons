@@ -7,12 +7,14 @@
 </script>
 
 <script lang="ts">
-  export let bannerClass: BannerClass = BannerClass.Info;
+  import type { Snippet } from "svelte";
+
+  const { bannerClass = BannerClass.Info, children }: { bannerClass?: BannerClass, children: Snippet } = $props()
 </script>
 
 <div class="content">
   <div class="banner {bannerClass}">
-    <slot />
+    {@render children()}
   </div>
 </div>
 

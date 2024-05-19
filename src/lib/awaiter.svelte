@@ -1,5 +1,5 @@
 <script lang="ts" context="module">
-  export type AwaiterResetFunction<P extends any> = (load: boolean, initialPayload?: P | null) => Promise<void>;
+  export type AwaiterResetFunction<P extends any> = (load?: boolean, initialPayload?: P | null) => Promise<void>;
   export type AwaiterCallback<T extends any, P extends any> = (setPayload: P) => T | Promise<T>;
   export enum AwaiterResultType {
     Ready, Loading, Success, Error
