@@ -15,10 +15,12 @@
   import Awaiter, { AwaiterResultType, type AwaiterChildrenParameters, type AwaiterResetFunction } from "$lib/awaiter.svelte";
 
   import LoadingSpinner from "./loading-spinner.svelte";
+  import { writable, type Writable } from 'svelte/store';
 
   const {
     buttonClass = ButtonClass.Primary,
     loading: customLoading,
+    error: customError,
     enabled = true,
     outline = true,
     onClick,
@@ -27,6 +29,7 @@
   }: {
     children: Snippet,
     loading?: Snippet
+    error?: Snippet<[Error]>
 
     buttonClass?: ButtonClass,
     enabled?: boolean,
@@ -39,8 +42,10 @@
   let run: AwaiterResetFunction<null> | undefined = $state();
 
   let event: MouseEvent | null = null;
+  let error: Writable<Error | null> = writable(null);
 
   async function click(newEvent: MouseEvent) {
+    $error = null
     try {
       event = newEvent
       busy = true;
@@ -60,6 +65,12 @@
     {:else}
       <LoadingSpinner size="1em" />
     {/if}
+  {:else if props.status === AwaiterResultType.Error}
+    {#if customError != null}
+      {@render customError($error = props.error)}
+    {:else}
+      {($error = props.error).message}
+    {/if}
   {:else}
     {@render children()}
   {/if}
@@ -67,7 +78,7 @@
 
 <button
   disabled={!enabled || busy}
-  class="button {buttonClass}{outline ? ' outline' : ''}"
+  class="button {buttonClass}{outline ? ' outline' : ''}{$error ? ' error' : ''}"
   onclick={click}
   title={hint}
 >
@@ -177,5 +188,20 @@
   button:disabled.background {
     background-color: var(--background);
     color: var(--onBackground);
+  }
+
+  button.error {
+    background-color: var(--error);
+    color: var(--onError);
+  }
+
+  button.error:hover {
+    background-color: var(--errorBackground);
+    color: var(--error);
+  }
+
+  button.error:active {
+    background-color: var(--onError);
+    color: var(--error);
   }
 </style>

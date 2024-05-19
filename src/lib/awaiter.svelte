@@ -62,7 +62,10 @@
         const result = callback(setPayload)
 
         if (result instanceof Promise) {
-          await (promiseState = result)
+          try {
+            await (promiseState = result)
+          }
+          catch {}
         }
       } catch (error: any) {
         promiseState = Promise.reject(error)
