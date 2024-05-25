@@ -25,7 +25,7 @@ export const colors = (): ColorValues => ({
 
   [ColorKey.Warning]: 0xffcc00ff,
   [ColorKey.WarningBackground]: 0xffcc007f,
-  [ColorKey.OnWarning]: 0xffffffff,
+  [ColorKey.OnWarning]: 0x000000ff,
 
   [ColorKey.Info]: 0x40a6ceff,
   [ColorKey.InfoBackground]: 0x40a6ce7f,

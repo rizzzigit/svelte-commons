@@ -25,7 +25,7 @@
 
   export const createTabId = <T extends TabItemExtra = TabItemExtra>(
     tabs: TabItem<T>[],
-    initialIndex: number
+    initialIndex: number = 0
   ): TabId<T> => ({
     [idKey]: writable({
       tabs,
@@ -39,12 +39,16 @@
     id,
     container,
     onUpdate,
-    host
+    host,
+    view: customView
   }: {
     id: TabId<T>;
     onUpdate?: UpdateCallback<T>;
-    host?: Snippet<[tabs: TabItem<T>[], currentIndex: number, setTab: SetTabFunction]>;
+
     container?: Snippet<[setTab: SetTabFunction, content: Snippet]>;
+
+    host?: Snippet<[tabs: TabItem<T>[], currentIndex: number, setTab: SetTabFunction]>;
+    view?: Snippet<[view: Snippet]>;
   } = $props();
 
   const { [idKey]: state } = id;
@@ -68,7 +72,15 @@
     {@render host($state.tabs, $state.currentIndex, setTab)}
   {/if}
 
-  {@render $state.tabs[$state.currentIndex].view(setTab, $state.tabs[$state.currentIndex])}
+  {#snippet view()}
+    {@render $state.tabs[$state.currentIndex].view(setTab, $state.tabs[$state.currentIndex])}
+  {/snippet}
+
+  {#if customView}
+    {@render customView(view)}
+  {:else}
+    {@render view()}
+  {/if}
 {/snippet}
 
 {#if $state.tabs.length > 0}

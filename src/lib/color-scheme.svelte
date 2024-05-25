@@ -2,10 +2,10 @@
   import { colors as enderColorScheme } from "./color-scheme/green.js";
   import { colors as enderDarkColorScheme } from "./color-scheme/green-dark.js";
 
-  import { writable, type Writable, derived as d, get } from "svelte/store";
-  import { BROWSER } from "esm-env";
+  import { derived as d, get } from "svelte/store";
+  import { persisted } from "svelte-persisted-store";
 
-  export type ColorSchemeName = "green" | "green-dark" | string;
+  export type ColorSchemeName = "Green" | "Green Dark" | string;
 
   export type ColorValues = Record<ColorKey, number>;
   export enum ColorKey {
@@ -43,8 +43,8 @@
     `#${color.toString(16)}`;
 
   export const registeredColors: Record<ColorSchemeName, ColorValues> = {
-    ["green"]: enderColorScheme(),
-    ["green-dark"]: enderDarkColorScheme(),
+    ["Green"]: enderColorScheme(),
+    ["Green Dark"]: enderDarkColorScheme(),
   };
 
   export function registerColorScheme(theme: string, colorScheme: ColorValues) {
@@ -92,22 +92,12 @@
     return style;
   }
 
-  const currentColorScheme: Writable<ColorSchemeName> = writable(
-    BROWSER ? localStorage.getItem("theme") || "green" : "green"
-  );
-
-  if (BROWSER) {
-    currentColorScheme.subscribe((value) => {
-      if (!(value in registeredColors)) {
-        console.warn(`Unknown theme: ${value}. Using default theme.`);
-        currentColorScheme.set("green");
-
-        return;
-      }
-
-      localStorage.setItem("theme", value);
-    });
-  }
+  const currentColorScheme = persisted("color-scheme", "Green", {
+    serializer: {
+      parse: (value) => (value in registeredColors ? value : "Green"),
+      stringify: (value) => value,
+    },
+  });
 
   export function setColorScheme(theme: ColorSchemeName) {
     if (!(theme in registeredColors)) {
@@ -124,19 +114,7 @@
 <script lang="ts">
   const { colorScheme }: { colorScheme?: ColorSchemeName } = $props();
 
-  let resolved: ColorSchemeName = $state("green");
-
-  if (colorScheme != null) {
-    if (!(colorScheme in registeredColors)) {
-      throw new Error(`Color scheme ${colorScheme} does not exist.`);
-    }
-
-    resolved = colorScheme;
-  } else if (BROWSER && $currentColorScheme != null) {
-    resolved = $currentColorScheme;
-  } else {
-    resolved = "green";
-  }
+  const resolved = colorScheme ?? $currentColorScheme;
 </script>
 
 <svelte:head>

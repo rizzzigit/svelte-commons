@@ -12,38 +12,32 @@
   const { bannerClass = BannerClass.Info, children }: { bannerClass?: BannerClass, children: Snippet } = $props()
 </script>
 
-<div class="content">
-  <div class="banner {bannerClass}">
-    {@render children()}
-  </div>
+<div class="banner {bannerClass}">
+  {@render children()}
 </div>
 
 <style lang="scss">
-  div.content {
+  div.banner {
     padding: 16px;
+    box-sizing: border-box;
+    border-radius: 8px;
+  }
 
-    > div.banner {
-      padding: 16px;
-      box-sizing: border-box;
+  div.banner.error {
+    border: solid 1px var(--error);
+    background-color: var(--errorBackground);
+    color: var(--onError);
+  }
 
-      border-radius: 8px;
+  div.banner.warning {
+    border: solid 1px var(--warning);
+    background-color: var(--warningBackground);
+    color: var(--onWarning);
+  }
 
-      color: var(--onError);
-    }
-
-    > div.banner.error {
-      border: solid 1px var(--error);
-      background-color: var(--errorBackground);
-    }
-
-    > div.banner.warning {
-      border: solid 1px var(--warning);
-      background-color: var(--warningBackground);
-    }
-
-    > div.banner.info {
-      border: solid 1px var(--info);
-      background-color: var(--infoBackground);
-    }
+  div.banner.info {
+    border: solid 1px var(--info);
+    background-color: var(--infoBackground);
+    color: var(--onInfo);
   }
 </style>
