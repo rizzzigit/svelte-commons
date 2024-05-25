@@ -56,10 +56,7 @@
       </ResponsiveLayout>
     {/if}
     {#if body}
-      <div
-        class="body"
-        style="{head ? 'margin-top: 16px;' : ''} {actions ? 'margin-bottom: 16px' : ''}"
-      >
+      <div class="body">
         {@render body()}
       </div>
     {/if}

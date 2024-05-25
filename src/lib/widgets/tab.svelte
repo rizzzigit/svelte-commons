@@ -1,0 +1,80 @@
+<script lang="ts" context="module">
+  import type { Snippet } from "svelte";
+  import { writable, type Writable } from "svelte/store";
+
+  export type TabItemExtra = Record<string, any>;
+
+  export type TabItem<T extends TabItemExtra = TabItemExtra> = {
+    view: Snippet<[setTab: SetTabFunction, tab: TabItem<T>]>;
+    name: string;
+  } & T
+
+  const idKey: unique symbol = Symbol("Id Key For Tab Component");
+
+  export interface TabState<T extends TabItemExtra = TabItemExtra> {
+    tabs: TabItem<T>[];
+    currentIndex: number;
+  }
+
+  export interface TabId<T extends TabItemExtra = TabItemExtra> {
+    [idKey]: Writable<TabState<T>>;
+  }
+
+  export type SetTabFunction = (tabIndex: number) => void;
+  export type UpdateCallback<T extends TabItemExtra = TabItemExtra> = (tab: TabItem<T>, index: number) => void;
+
+  export const createTabId = <T extends TabItemExtra = TabItemExtra>(
+    tabs: TabItem<T>[],
+    initialIndex: number
+  ): TabId<T> => ({
+    [idKey]: writable({
+      tabs,
+      currentIndex: initialIndex < tabs.length ? initialIndex : 0,
+    }),
+  });
+</script>
+
+<script lang="ts" generics="T extends TabItemExtra = TabItemExtra">
+  const {
+    id,
+    container,
+    onUpdate,
+    host
+  }: {
+    id: TabId<T>;
+    onUpdate?: UpdateCallback<T>;
+    host?: Snippet<[tabs: TabItem<T>[], currentIndex: number, setTab: SetTabFunction]>;
+    container?: Snippet<[setTab: SetTabFunction, content: Snippet]>;
+  } = $props();
+
+  const { [idKey]: state } = id;
+
+  const setTab: SetTabFunction = (tabIndex: number) => {
+    state.update((value) => {
+      if (!(tabIndex in value.tabs)) {
+        throw new Error(`Tab ${tabIndex} does not exist.`);
+      }
+
+      value.currentIndex = tabIndex;
+      return value;
+    });
+
+    onUpdate?.($state.tabs[tabIndex], tabIndex);
+  };
+</script>
+
+{#snippet content()}
+  {#if host}
+    {@render host($state.tabs, $state.currentIndex, setTab)}
+  {/if}
+
+  {@render $state.tabs[$state.currentIndex].view(setTab, $state.tabs[$state.currentIndex])}
+{/snippet}
+
+{#if $state.tabs.length > 0}
+  {#if container}
+    {@render container(setTab, content)}
+  {:else}
+    {@render content()}
+  {/if}
+{/if}
