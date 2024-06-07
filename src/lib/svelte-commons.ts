@@ -10,7 +10,12 @@ export { default as Dialog, DialogClass } from "./widgets/dialog.svelte";
 
 export { default as Expandable } from "./widgets/expandable.svelte";
 
-export { default as Input, InputClass } from "./widgets/input.svelte";
+export {
+  default as Input,
+  InputClass,
+  InputType,
+  type InputOptions,
+} from "./widgets/input.svelte";
 
 export {
   default as Tab,

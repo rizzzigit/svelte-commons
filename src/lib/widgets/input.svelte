@@ -1,157 +1,215 @@
 <script context="module" lang="ts">
+  import { writable, type Writable } from "svelte/store";
+
   export enum InputClass {
-    Primary = 'primary',
-    PrimaryContainer = 'primary-container',
-    Background = 'background'
-  }
-</script>
-
-<script lang="ts">
-  import { onMount } from 'svelte';
-
-  export let inputClass: InputClass = InputClass.Background;
-  export let type: HTMLInputElement['type'] = 'text';
-  export let name: string;
-  export let required: boolean = false;
-  export let disabled: boolean = false;
-  export let text: string = '';
-  export let placeholder: string = 'Type something...';
-  export let valid: boolean = true;
-  export let autoFocus: boolean = false;
-  export let validate: (() => boolean) | null = null;
-  export let onSubmit: (() => Promise<void> | void) | null = null;
-
-  let element: HTMLInputElement | null = null;
-  let busy: boolean = false;
-
-  async function submit() {
-    if (busy) {
-      return;
-    }
-
-    busy = true;
-    try {
-      await onSubmit?.();
-    } finally {
-      busy = false;
-    }
+    Primary = "primary",
+    PrimaryContainer = "primary-container",
+    Background = "background",
+    Transparent = "transparent",
   }
 
-  const applyChange = () => {
-    text = element?.value || '';
-    valid = validate?.() ?? element?.checkValidity() ?? true;
-  };
+  export enum InputType {
+    Text,
+    Password,
+    Number,
+    Date,
+    Time,
+    Submit,
+    DropDown,
+    Radio,
+  }
 
-  onMount(() => {
-    if (autoFocus && element != null) {
-      element.focus();
-    }
-  });
-</script>
+  export type InputOptions<T extends InputType> = ({
+    class?: InputClass;
+    icon?: string;
+    name: string;
 
-<div class="input {inputClass}">
-  <button on:click={() => element?.focus()}><p>{name}</p></button>
-  <input
-    bind:this={element}
-    {type}
-    {name}
-    {required}
-    disabled={disabled || busy}
-    {placeholder}
-    on:keydown={async (event) => {
-      applyChange();
-
-      if (event.key === 'Enter') {
-        await submit();
+    value: Writable<any>;
+    tabIndex?: number;
+  } & (
+    | {
+        type: InputType.Text | InputType.Password;
+        placeholder?: string;
+        value: Writable<string>;
+        update?: (value: string) => void;
       }
-    }}
-    on:change={applyChange}
-  />
-</div>
+    | {
+        type: InputType.Number;
+        placeholder?: string;
+        value: Writable<number>;
+        update?: (value: number) => void;
+      }
+  )) & { type: T };
+</script>
+
+<script lang="ts" generics="T extends InputType">
+  let {
+    value,
+    focus = $bindable(),
+    error,
+    onSubmit,
+    ...options
+  }: InputOptions<T> & {
+    focus?: () => void;
+    error?: Error;
+    onSubmit?: () => void;
+  } = $props();
+
+  const icon = options.icon ?? "fa-regular fa-pen-to-square";
+  const inputClass = options.class ?? InputClass.Primary;
+
+  let inputElement: Writable<HTMLInputElement | null> = writable(null);
+
+  $effect(
+    () =>
+      (focus = () => {
+        $inputElement?.focus();
+      })
+  );
+</script>
+
+<button
+  class="input {inputClass}"
+  onclick={(event) => {
+    $inputElement?.focus();
+  }}
+>
+  <i class="{icon} icon"></i>
+  <div class="field">
+    <p class="label">
+      {options.name}
+      {#if error != null}
+        <span>{error.message}</span>
+      {/if}
+    </p>
+    <div class="input">
+      <form
+        onsubmit={(event) => {
+          event.preventDefault();
+          onSubmit?.();
+        }}
+      >
+        {#if options.type === InputType.Text || options.type === InputType.Password}
+          {@const { placeholder } = options}
+          <input
+            bind:this={$inputElement}
+            type={options.type === InputType.Password ? "password" : "text"}
+            {placeholder}
+            bind:value={$value}
+          />
+        {:else if options.type === InputType.Number}
+          {@const { placeholder } = options}
+          <input
+            bind:this={$inputElement}
+            type="number"
+            {placeholder}
+            bind:value={$value}
+          />
+        {/if}
+      </form>
+    </div>
+  </div>
+</button>
 
 <style lang="scss">
-  div.input {
-    color: var(--onPrimaryContainer);
+  form {
+    display: contents;
+  }
 
-    display: flex;
-    flex-direction: column;
-
+  button.input {
     cursor: text;
 
-    padding: 4px 8px 4px 8px;
+    max-width: 100%;
+    min-width: 100%;
 
-    border-radius: 8px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
 
-    > button {
-      background-color: unset;
-      color: unset;
-      border: unset;
+    border: solid 1px transparent;
 
-      padding: 0px;
+    font-size: inherit;
+    font-weight: inherit;
 
-      font-size: 12px;
+    padding: 4px 8px;
+    gap: 8px;
+    border-radius: 4px;
 
-      cursor: unset;
+    > i.icon {
+      width: 16px;
+      height: 16px;
+    }
 
-      > p {
-        margin: 0px;
+    > div.field {
+      min-width: 0px;
+      flex-grow: 1;
 
-        text-align: left;
+      display: flex;
+      flex-direction: column;
+      align-items: safe start;
+      overflow: hidden;
+
+      > p.label {
+        min-width: 100%;
+        max-width: 100%;
+        font-size: 0.75em;
+        text-align: start;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        text-wrap: nowrap;
+      }
+
+      > div.input {
+        min-width: 100%;
+        max-width: 100%;
+        flex-grow: 1;
+
+        > form {
+          > input {
+            min-width: 100%;
+            max-width: 100%;
+            min-height: 100%;
+            box-sizing: border-box;
+
+            background-color: inherit;
+            color: inherit;
+
+            outline: none;
+            border: none;
+            border-bottom: solid 1px transparent;
+
+            font-size: inherit;
+            font-weight: inherit;
+          }
+
+          > input:focus {
+            border-bottom-color: var(--onBackground);
+          }
+
+          > input:autofill {
+            background-color: inherit;
+          }
+        }
       }
     }
-
-    > input {
-      background-color: var(--backgroundVariant);
-      color: unset;
-      border: unset;
-
-      outline: none;
-
-      font-size: 14px;
-      border-radius: 8px;
-    }
   }
 
-  div.input.primary {
-    border: solid 1px var(--onPrimary);
+  button.input {
+    background-color: var(--backgroundVariant);
+    color: var(--onBackgroundVariant);
+    border-color: var(--shadow);
 
-    > button {
-      color: var(--onPrimary);
-    }
-
-    > input {
-      background-color: var(--primary);
-      color: var(--onPrimary);
-    }
+    transition: all linear 150ms;
   }
 
-  div.input.primary-container {
-    border: solid 1px var(--primaryContainer);
-
-    > button {
-      color: var(--primaryContainer);
-    }
-
-    > input {
-      background-color: var(--primaryContainer);
-      color: var(--onPrimaryContainer);
-    }
+  button.input:hover {
+    border-color: var(--onBackgroundVariant);
   }
 
-  div.input.background {
-    border: solid 1px var(--onBackground);
-
-    > button {
-      color: var(--onBackground);
-    }
-
-    > input {
-      background-color: var(--backgroundVariant);
-      color: var(--onBackgroundVariant);
-    }
-  }
-
-  div.input:focus-within {
-    outline: -webkit-focus-ring-color auto 1px;
+  button.input:focus-within {
+    background-color: var(--background);
+    color: var(--onBackground);
+    border-color: var(--onBackground);
   }
 </style>
