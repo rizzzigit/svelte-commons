@@ -21,17 +21,27 @@
     dialogClass = DialogClass.Normal,
     head,
     body,
-    actions
+    actions,
+
+    dialogContainer,
+    headContainer,
+    bodyContainer,
+    actionsContainer
   }: {
     onDismiss: () => void;
     dialogClass?: DialogClass;
     head?: Snippet;
     body?: Snippet;
     actions?: Snippet;
+
+    dialogContainer?: Snippet<[view: Snippet]>,
+    headContainer?: Snippet<[view: Snippet]>,
+    bodyContainer?: Snippet<[view: Snippet]>,
+    actionsContainer?: Snippet<[view: Snippet]>
   } = $props();
 </script>
 
-<Overlay {onDismiss} dim={true}>
+{#snippet dialog()}
   <div
     class="dialog {dialogClass} {$viewMode & ViewMode.Mobile ? 'mobile' : ''}"
     transition:scale|global={{ duration: 200, start: 0.9 }}
@@ -39,33 +49,75 @@
     {#if head}
       <ResponsiveLayout>
         {#snippet desktop()}
-          <div class="head">
-            {@render head()}
-          </div>
+          {#if head}
+            {#snippet headContent()}
+              <div class="head">
+                {@render head()}
+              </div>
+            {/snippet}
+
+            {#if headContainer}
+              {@render headContainer(headContent)}
+            {:else}
+              {@render headContent()}
+            {/if}
+          {/if}
         {/snippet}
         {#snippet mobile()}
           <div class="head-mobile">
             <div class="head-element">
-              {@render head()}
+              {#if head}
+                {#if headContainer}
+                  {@render headContainer(head)}
+                {:else}
+                  {@render head()}
+                {/if}
+              {/if}
             </div>
-            <Button buttonClass={ButtonClass.Background} onClick={() => onDismiss()}>
-              <XIcon />
+            <Button buttonClass={ButtonClass.Transparent} onClick={() => onDismiss()} outline={false}>
+              <div class="close-button">
+                <XIcon />
+              </div>
             </Button>
           </div>
         {/snippet}
       </ResponsiveLayout>
     {/if}
     {#if body}
-      <div class="body">
-        {@render body()}
-      </div>
+      {#snippet bodyContent()}
+        <div class="body">
+          {@render body()}
+        </div>
+      {/snippet}
+
+      {#if bodyContainer}
+        {@render bodyContainer(bodyContent)}
+      {:else}
+        {@render bodyContent()}
+      {/if}
     {/if}
     {#if actions}
-      <div class="actions">
-        {@render actions()}
-      </div>
+      {#snippet actionsContent()}
+        <div class="actions">
+          {@render actions()}
+        </div>
+      {/snippet}
+
+      {#if actionsContainer}
+        {@render actionsContainer(actionsContent)}
+      {:else}
+        {@render actionsContent()}
+      {/if}
     {/if}
   </div>
+{/snippet}
+
+<Overlay {onDismiss} dim={true}>
+  {#if dialogContainer}
+    {@render dialogContainer(dialog)}
+  {:else}
+    {@render dialog()}
+  {/if}
 </Overlay>
 
 <style lang="scss">
@@ -110,6 +162,7 @@
 
     > div.actions {
       display: flex;
+      align-items: center;
 
       gap: 8px;
       justify-content: flex-end;
@@ -142,5 +195,14 @@
   div.dialog.error {
     background-color: #ffa0a0;
     color: var(--onBackground);
+  }
+
+  div.close-button {
+    min-width: 100%;
+    min-height: 100%;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
   }
 </style>
