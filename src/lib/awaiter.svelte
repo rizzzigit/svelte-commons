@@ -68,9 +68,16 @@
           catch {}
         }
       } catch (error: any) {
-        promiseState = Promise.reject(error)
+        throw promiseState = Promise.reject(error)
       }
-    } catch {}
+    } catch {
+    }
+
+    try {
+      await promiseState
+    } catch (error: any) {
+      console.error(error)
+    }
   }
 
   const resetFunc: AwaiterResetFunction<P> = async  (load: boolean = autoLoad, initialPayload: P | null = null) => {
