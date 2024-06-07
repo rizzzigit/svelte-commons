@@ -175,14 +175,13 @@
     color: var(--backgroundVariant);
   }
 
-  button.transparent, button.transparent:hover {
+  button.transparent{
     background-color: transparent;
     color: inherit;
   }
 
   button.transparent:active {
     background-color: var(--shadow);
-    color: inherit;
   }
 
   button:disabled {
