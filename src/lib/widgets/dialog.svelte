@@ -43,7 +43,8 @@
 
 {#snippet dialog()}
   <div
-    class="dialog {dialogClass} {$viewMode & ViewMode.Mobile ? 'mobile' : ''}"
+    class="dialog {dialogClass} dim"
+    class:mobile={$viewMode & ViewMode.Mobile}
     transition:scale|global={{ duration: 200, start: 0.9 }}
   >
     {#if head}
@@ -130,7 +131,7 @@
     padding: 16px;
     // border: solid 1px var(--primary);
     border-radius: 8px;
-    box-shadow: gray 2px 2px 8px;
+    box-shadow: var(--shadow) 2px 2px 8px;
 
     display: flex;
     flex-direction: column;
@@ -167,6 +168,10 @@
       gap: 8px;
       justify-content: flex-end;
     }
+  }
+
+  div.dialog.dim  {
+    box-shadow: black 2px 2px 8px;
   }
 
   div.dialog.mobile {
