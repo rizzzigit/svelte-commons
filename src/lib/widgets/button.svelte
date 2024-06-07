@@ -20,6 +20,7 @@
   const {
     buttonClass = ButtonClass.Primary,
     loading: customLoading,
+    container: customContainer,
     error: customError,
     enabled = true,
     outline = true,
@@ -28,6 +29,7 @@
     children
   }: {
     children: Snippet,
+    container?: Snippet<[content: Snippet]>,
     loading?: Snippet
     error?: Snippet<[Error]>
 
@@ -82,7 +84,19 @@
   onclick={click}
   title={hint}
 >
-  <Awaiter bind:reset={run} children={buttonContent} callback={() => onClick(event!)} autoLoad={false} />
+  <Awaiter bind:reset={run} callback={() => onClick(event!)} autoLoad={false}>
+    {#snippet children(props)}
+      {#snippet content()}
+        {@render buttonContent(props)}
+      {/snippet}
+
+      {#if customContainer != null}
+        {@render customContainer(content)}
+      {:else}
+        {@render content()}
+      {/if}
+    {/snippet}
+  </Awaiter>
 </button>
 
 <style lang="scss">
