@@ -79,6 +79,7 @@ export {
   registerColorScheme,
   currentColorScheme,
   setColorScheme,
+  getColorHex
 } from "./color-scheme.svelte";
 
 export {
