@@ -110,7 +110,7 @@
       max-height: 0px;
 
       > div.view {
-        min-height: 100vh;
+        min-height: 100dvh;
 
         display: flex;
         flex-direction: column;
@@ -126,8 +126,8 @@
         }
 
         > div.custom-offset {
-          width: 100vw;
-          height: 100vh;
+          width: 100dvw;
+          height: 100dvh;
           display: inline;
           pointer-events: none;
 
@@ -148,8 +148,8 @@
         }
 
         > button {
-          width: 100vw;
-          height: 100vh;
+          width: 100dvw;
+          height: 100dvh;
           border: none;
           background-color: transparent;
           outline: none;

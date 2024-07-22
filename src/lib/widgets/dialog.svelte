@@ -123,8 +123,8 @@
 
 <style lang="scss">
   div.dialog {
-    max-width: calc(100vw - 32px);
-    max-height: calc(100vh - 32px);
+    max-width: calc(100dvw - 32px);
+    max-height: calc(100dvh - 32px);
 
     box-sizing: border-box;
 
@@ -175,11 +175,11 @@
   }
 
   div.dialog.mobile {
-    width: 100vw;
-    height: 100vh;
+    width: 100dvw;
+    height: 100dvh;
 
-    max-width: 100vw;
-    max-height: 100vh;
+    max-width: 100dvw;
+    max-height: 100dvh;
 
     padding: 16px;
 
