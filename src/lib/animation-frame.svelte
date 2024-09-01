@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   import { onDestroy, onMount } from 'svelte';
   import { get, writable, type Writable } from 'svelte/store';
 

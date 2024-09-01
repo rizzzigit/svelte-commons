@@ -1,43 +1,10 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   import { colors as enderColorScheme } from "./color-scheme/green.js";
   import { colors as enderDarkColorScheme } from "./color-scheme/green-dark.js";
 
-  import { derived as d, get } from "svelte/store";
+  import { derived as d, derived, get } from "svelte/store";
   import { persisted } from "svelte-persisted-store";
-
-  export type ColorSchemeName = "Green" | "Green Dark" | string;
-
-  export type ColorValues = Record<ColorKey, number>;
-  export enum ColorKey {
-    Primary = "primary",
-    OnPrimary = "onPrimary",
-    PrimaryContainer = "primaryContainer",
-    OnPrimaryContainer = "onPrimaryContainer",
-
-    PrimaryVariant = "primaryVariant",
-    OnPrimaryVariant = "onPrimaryVariant",
-    PrimaryContainerVariant = "primaryContainerVariant",
-    OnPrimaryContainierVariant = "onPrimaryContainerVariant",
-
-    Background = "background",
-    BackgroundVariant = "backgroundVariant",
-    OnBackground = "onBackground",
-    OnBackgroundVariant = "onBackgroundVariant",
-
-    Error = "error",
-    ErrorBackground = "errorBackground",
-    OnError = "onError",
-
-    Warning = "warning",
-    WarningBackground = "warningBackground",
-    OnWarning = "onWarning",
-
-    Info = "info",
-    InfoBackground = "infoBackground",
-    OnInfo = "onInfo",
-
-    Shadow = "shadow",
-  }
+	import type { ColorKey, ColorSchemeName, ColorValues } from "./types.js";
 
   export const intColorToHex = (color: number): string =>
     `#${color.toString(16)}`;
@@ -86,7 +53,9 @@
         style += "; ";
       }
 
-      style += `--${key}: #${color[<ColorKey>key].toString(16).padStart(8, "0")}`;
+      const value = color[key as ColorKey].toString(16).padStart(8, "0")
+
+      style += `--${key}: #${value}`;
     }
 
     return style;
@@ -112,13 +81,14 @@
 </script>
 
 <script lang="ts">
-  const { colorScheme }: { colorScheme?: ColorSchemeName } = $props();
+  const { colorScheme = undefined }: { colorScheme?: ColorSchemeName } = $props();
 
-  const resolved = colorScheme ?? $currentColorScheme;
+  const useColorScheme = derived(currentColorScheme, (theme) => colorScheme ?? theme);
+  const style = derived(useColorScheme, (theme) => `<style>body { ${generateCssPropertyDeclarations(theme)} }</style>`);
 </script>
 
 <svelte:head>
-  {#key resolved}
-    {@html `<style>body { ${generateCssPropertyDeclarations(resolved)}}</style>`}
+  {#key $useColorScheme}
+    {@html $style}
   {/key}
 </svelte:head>

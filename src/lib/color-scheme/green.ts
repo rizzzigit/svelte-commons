@@ -1,7 +1,5 @@
-import {
-  ColorKey,
-  type ColorValues
-} from "$lib/color-scheme.svelte";
+import { ColorKey } from "$lib/svelte-commons.js";
+import type { ColorValues } from "$lib/types.js";
 
 export const colors = (): ColorValues => ({
   [ColorKey.Primary]: 0x0f3031ff,

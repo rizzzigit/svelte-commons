@@ -1,6 +1,6 @@
 <!-- https://www.benmvp.com/blog/how-to-create-circle-svg-gradient-loading-spinner -->
 
-<script lang="ts" context="module">
+<script lang="ts" module>
   import { get, writable, type Writable } from 'svelte/store';
 
   let spinner: Writable<[degrees: number, time: number | null]> = writable([0, null]);

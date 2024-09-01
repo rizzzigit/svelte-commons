@@ -28,7 +28,7 @@
       <div
         class="loading-thumb noprogress"
         bind:clientWidth={thumbWidth}
-        style="margin-left: {payload.offset - thumbWidth}px;"
+        style="margin-left: {Math.min(payload.offset - thumbWidth, barWidth)}px;"
       ></div>
     </div>
   </AnimationFrame>
@@ -44,8 +44,7 @@
 
 <style lang="scss">
   div.loading-bar {
-    width: 100%;
-    height: 4px;
+    min-height: 4px;
 
     background-color: var(--primaryContainer);
 

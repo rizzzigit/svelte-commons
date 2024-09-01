@@ -1,58 +1,22 @@
-<script context="module" lang="ts">
+<script module lang="ts">
+	import { InputClass, InputType, type InputOptions } from "$lib/types.js";
   import { writable, type Writable } from "svelte/store";
 
-  export enum InputClass {
-    Primary = "primary",
-    PrimaryContainer = "primary-container",
-    Background = "background",
-    Transparent = "transparent",
-  }
-
-  export enum InputType {
-    Text,
-    Password,
-    Number,
-    Date,
-    Time,
-    Submit,
-    DropDown,
-    Radio,
-  }
-
-  export type InputOptions<T extends InputType> = ({
-    class?: InputClass;
-    icon?: string;
-    name: string;
-
-    value: Writable<any>;
-    tabIndex?: number;
-  } & (
-    | {
-        type: InputType.Text | InputType.Password;
-        placeholder?: string;
-        value: Writable<string>;
-        update?: (value: string) => void;
-      }
-    | {
-        type: InputType.Number;
-        placeholder?: string;
-        value: Writable<number>;
-        update?: (value: number) => void;
-      }
-  )) & { type: T };
 </script>
 
 <script lang="ts" generics="T extends InputType">
   let {
     value,
     focus = $bindable(),
+    focused = $bindable(true),
     error,
     onSubmit,
     ...options
   }: InputOptions<T> & {
     focus?: () => void;
+    focused?: boolean;
     error?: Error;
-    onSubmit?: () => void;
+    onSubmit?: (event: Event) => void;
   } = $props();
 
   const icon = options.icon ?? "fa-regular fa-pen-to-square";
@@ -70,14 +34,15 @@
 
 <button
   class="input {inputClass}"
-  onclick={(event) => {
-    $inputElement?.focus();
-  }}
+  onclick={() => void $inputElement?.focus()}
+  onfocus={() => void $inputElement?.select()}
 >
   <i class="{icon} icon"></i>
   <div class="field">
     <p class="label">
-      {options.name}
+      {#if options.name != null}
+        {options.name}
+      {/if}
       {#if error != null}
         <span>{error.message}</span>
       {/if}
@@ -86,7 +51,7 @@
       <form
         onsubmit={(event) => {
           event.preventDefault();
-          onSubmit?.();
+          onSubmit?.(event);
         }}
       >
         {#if options.type === InputType.Text || options.type === InputType.Password}

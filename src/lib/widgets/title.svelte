@@ -1,4 +1,4 @@
-<script lang="ts" context="module">
+<script lang="ts" module>
   export const titleStack: Writable<{ title: string }[]> = writable([]);
   export const titleString: Readable<string> = derived(titleStack, (titleStack) => {
     return titleStack
@@ -10,8 +10,7 @@
 
 <script lang="ts">
   import { onDestroy, onMount, type Snippet } from 'svelte';
-  import type { Readable } from 'svelte/motion';
-  import { derived, writable, type Writable } from 'svelte/store';
+  import { derived, writable, type Writable, type Readable } from 'svelte/store';
 
   const {
     title,
@@ -19,7 +18,7 @@
     last = false
   }: { title: string; children?: Snippet<[string]>; last?: boolean } = $props();
 
-  const entry = { title };
+  const entry = $state({ title });
 
   onMount(() => {
     if (last) {

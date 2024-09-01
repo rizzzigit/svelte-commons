@@ -1,43 +1,43 @@
-<script lang="ts" context="module">
-  export enum BannerClass {
-    Info = "info",
-    Warning = "warning",
-    Error = "error",
-  }
+<script lang="ts" module>
+	import { BannerClass } from '$lib/types.js';
+
 </script>
 
 <script lang="ts">
-  import type { Snippet } from "svelte";
+	import type { Snippet } from 'svelte';
 
-  const { bannerClass = BannerClass.Info, children }: { bannerClass?: BannerClass, children: Snippet } = $props()
+	const {
+		bannerClass = BannerClass.Info,
+		children
+	}: { bannerClass?: BannerClass; children: Snippet } = $props();
 </script>
 
 <div class="banner {bannerClass}">
-  {@render children()}
+	{@render children()}
 </div>
 
 <style lang="scss">
-  div.banner {
-    padding: 16px;
-    box-sizing: border-box;
-    border-radius: 8px;
-  }
+	div.banner {
+		padding: 16px;
+		box-sizing: border-box;
+		border-radius: 8px;
+	}
 
-  div.banner.error {
-    border: solid 1px var(--error);
-    background-color: var(--errorBackground);
-    color: var(--onError);
-  }
+	div.banner.error {
+		border: solid 1px var(--error);
+		background-color: var(--errorBackground);
+		color: var(--onError);
+	}
 
-  div.banner.warning {
-    border: solid 1px var(--warning);
-    background-color: var(--warningBackground);
-    color: var(--onWarning);
-  }
+	div.banner.warning {
+		border: solid 1px var(--warning);
+		background-color: var(--warningBackground);
+		color: var(--onWarning);
+	}
 
-  div.banner.info {
-    border: solid 1px var(--info);
-    background-color: var(--infoBackground);
-    color: var(--onInfo);
-  }
+	div.banner.info {
+		border: solid 1px var(--info);
+		background-color: var(--infoBackground);
+		color: var(--onInfo);
+	}
 </style>

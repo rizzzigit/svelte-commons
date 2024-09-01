@@ -1,19 +1,14 @@
-<script lang="ts" context="module">
-  export enum DialogClass {
-    Normal = 'normal',
-    Warning = 'warning',
-    Error = 'error'
-  }
+<script lang="ts" module>
+	import { ButtonClass, DialogClass, viewMode, ViewMode } from '$lib/types.js';
+
 </script>
 
 <script lang="ts">
   import { XIcon } from 'svelte-feather-icons';
 
-  import Button, { ButtonClass } from './button.svelte';
+  import Button from './button.svelte';
   import { scale } from 'svelte/transition';
-  import ResponsiveLayout from '$lib/responsive-layout.svelte';
   import Overlay from './overlay.svelte';
-  import { ViewMode, viewMode } from '$lib/responsive-layout.svelte';
   import type { Snippet } from 'svelte';
 
   const {
@@ -48,41 +43,38 @@
     transition:scale|global={{ duration: 200, start: 0.9 }}
   >
     {#if head}
-      <ResponsiveLayout>
-        {#snippet desktop()}
-          {#if head}
-            {#snippet headContent()}
-              <div class="head">
-                {@render head()}
-              </div>
-            {/snippet}
-
-            {#if headContainer}
-              {@render headContainer(headContent)}
-            {:else}
-              {@render headContent()}
-            {/if}
-          {/if}
-        {/snippet}
-        {#snippet mobile()}
-          <div class="head-mobile">
-            <div class="head-element">
-              {#if head}
-                {#if headContainer}
-                  {@render headContainer(head)}
-                {:else}
-                  {@render head()}
-                {/if}
-              {/if}
+      {#if $viewMode & ViewMode.Desktop}
+        {#if head}
+          {#snippet headContent()}
+            <div class="head">
+              {@render head()}
             </div>
-            <Button buttonClass={ButtonClass.Transparent} onClick={() => onDismiss()} outline={false}>
-              <div class="close-button">
-                <XIcon />
-              </div>
-            </Button>
+          {/snippet}
+
+          {#if headContainer}
+            {@render headContainer(headContent)}
+          {:else}
+            {@render headContent()}
+          {/if}
+        {/if}
+      {:else if $viewMode & ViewMode.Mobile}
+        <div class="head-mobile">
+          <div class="head-element">
+            {#if head}
+              {#if headContainer}
+                {@render headContainer(head)}
+              {:else}
+                {@render head()}
+              {/if}
+            {/if}
           </div>
-        {/snippet}
-      </ResponsiveLayout>
+          <Button buttonClass={ButtonClass.Transparent} onClick={() => onDismiss()} outline={false}>
+            <div class="close-button">
+              <XIcon />
+            </div>
+          </Button>
+        </div>
+      {/if}
     {/if}
     {#if body}
       {#snippet bodyContent()}
