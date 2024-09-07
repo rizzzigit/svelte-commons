@@ -1,6 +1,7 @@
 <script lang="ts" module>
-	import { type OverlayPosition, OverlayPositionType } from '$lib/types.js';
+	export type OverlayPositionType = 'center' | 'offset';
 
+	export type OverlayPosition = [type: 'center'] | [type: 'offset', x: number, y: number];
 </script>
 
 <script lang="ts">
@@ -22,7 +23,7 @@
 
 	const {
 		dim = false,
-		position = [OverlayPositionType.Center],
+		position = ['center'],
 		onDismiss,
 		children,
 
@@ -57,7 +58,7 @@
 	{/if}
 	<div class="layer">
 		<div class="view">
-			{#if position[0] === OverlayPositionType.Offset}
+			{#if position[0] === 'offset'}
 				{@const overlayPositionX = Math.abs(position[1])}
 				{@const overlayPositionY = Math.abs(position[2])}
 
@@ -80,7 +81,7 @@
 						{@render children()}
 					</div>
 				</div>
-			{:else if position[0] === OverlayPositionType.Center}
+			{:else if position[0] === 'center'}
 				<div
 					class="main"
 					style="z-index: 2;"

@@ -1,33 +1,45 @@
 <script lang="ts" module>
-	import { viewMode, ViewMode } from "./types.js";
+	import { get, writable, type Writable } from 'svelte/store';
 
-  import { get, writable, type Writable } from "svelte/store";
+	export const ViewMode = {
+		Unset: 0,
 
-  function onResize() {
-    let newViewMode: ViewMode = ViewMode.Unset;
+		Mobile: 0b0000001,
+		Desktop: 0b0000010,
+		Browser: 0b0000100,
+		Standalone: 0b0001000,
+		Fullscreen: 0b0010000,
+		MinimalUI: 0b0100000,
+		OverlayControls: 0b1000000
+	};
 
-    newViewMode |= window.matchMedia("(max-width: 768px)").matches
-      ? ViewMode.Mobile
-      : ViewMode.Desktop;
+	export const viewMode: Writable<number> = writable(ViewMode.Unset);
 
-    newViewMode |= window.matchMedia("(display-mode: minimal-ui)").matches
-      ? ViewMode.MinimalUI
-      : window.matchMedia("(display-mode: window-controls-overlay)").matches
-        ? ViewMode.OverlayControls
-        : window.matchMedia("(display-mode: standalone)").matches
-          ? ViewMode.Standalone
-          : ViewMode.Browser;
+	function onResize() {
+		let newViewMode: number = ViewMode.Unset;
 
-    if (newViewMode != get(viewMode)) {
-      viewMode.set(newViewMode);
-    }
-  }
+		newViewMode |= window.matchMedia('(max-width: 768px)').matches
+			? ViewMode.Mobile
+			: ViewMode.Desktop;
+
+		newViewMode |= window.matchMedia('(display-mode: minimal-ui)').matches
+			? ViewMode.MinimalUI
+			: window.matchMedia('(display-mode: window-controls-overlay)').matches
+				? ViewMode.OverlayControls
+				: window.matchMedia('(display-mode: standalone)').matches
+					? ViewMode.Standalone
+					: ViewMode.Browser;
+
+		if (newViewMode != get(viewMode)) {
+			viewMode.set(newViewMode);
+		}
+	}
 </script>
 
 <script lang="ts">
-  import { onMount } from "svelte";
+	import { onMount } from 'svelte';
 
-  onMount(() => onResize());
+	onMount(() => onResize());
 </script>
 
 <svelte:window onresize={onResize} />

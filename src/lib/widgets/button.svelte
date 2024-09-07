@@ -1,16 +1,19 @@
 <script lang="ts" module>
-	import Awaiter from '$lib/awaiter.svelte';
+	import Awaiter, {
+		type AwaiterResetFunction,
+		type AwaiterChildrenParameters
+	} from '$lib/awaiter.svelte';
 
 	import { AwaiterResultType } from '$lib/svelte-commons.js';
 
-	import {
-		type AwaiterResetFunction,
-		type AwaiterChildrenParameters,
-		ButtonClass,
+	export type ButtonClass =
+		| 'primary'
+		| 'primary-container'
+		| 'background'
+		| 'background-variant'
+		| 'transparent';
 
-		type ButtonCallback
-
-	} from '$lib/types.js';
+	export type ButtonCallback = (event: MouseEvent) => Promise<void> | void;
 </script>
 
 <script lang="ts">
@@ -21,7 +24,7 @@
 	import { writable, type Writable } from 'svelte/store';
 
 	let {
-		buttonClass = ButtonClass.Primary,
+		buttonClass = 'primary',
 		loading: customLoading,
 		container: customContainer,
 		error: customError,

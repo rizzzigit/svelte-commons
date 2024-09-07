@@ -1,8 +1,8 @@
 <script lang="ts" module>
   export const titleStack: Writable<{ title: string }[]> = writable([]);
   export const titleString: Readable<string> = derived(titleStack, (titleStack) => {
-    return titleStack
-      .toReversed()
+    return [...titleStack]
+      .reverse()
       .map(({ title }) => title)
       .join(' - ');
   });

@@ -1,15 +1,12 @@
 <script lang="ts" module>
-	import { BannerClass } from '$lib/types.js';
-
+	export type BannerClass = 'info' | 'warning' | 'error';
 </script>
 
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	const {
-		bannerClass = BannerClass.Info,
-		children
-	}: { bannerClass?: BannerClass; children: Snippet } = $props();
+	const { bannerClass = 'info', children }: { bannerClass?: BannerClass; children: Snippet } =
+		$props();
 </script>
 
 <div class="banner {bannerClass}">
